@@ -1,5 +1,4 @@
 {
-  "update_url": "https://clients2.google.com/service/update2/crx",
   "manifest_version": 3,
   "name": "FunPay Tools",
   "version": "2.9.9",
@@ -9,9 +8,7 @@
     "tabs",
     "cookies",
     "alarms",
-    "offscreen",
-    "notifications",
-    "background"
+    "notifications"
   ],
   "host_permissions": [
     "https://fptools-ai-server.vercel.app/*",
@@ -40,6 +37,7 @@
   },
   "background": {
     "service_worker": "background/background.js",
+    "scripts": ["background/background.js"],
     "type": "module"
   },
   "content_scripts": [
