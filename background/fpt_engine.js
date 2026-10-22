@@ -20,7 +20,7 @@
 //
 // Polling design ported from FP Tools's Runner: fresh RANDOM tag per cycle for
 // chat_bookmarks AND orders_counters, per-message dedup.
-
+import { ensureOffscreenDocument as ensureOffscreen } from './offscreen_helper.js';
 import { runAutoResponderCycle } from './autoresponder.js';
 
 export const ENGINE_HEARTBEAT_ALARM = 'fpToolsEngineHeartbeat';
@@ -58,32 +58,6 @@ async function anyAutomationEnabled() {
 // Layer 2 enabler: make sure the offscreen document exists so its keepalive interval runs.
 let _offscreenCreatedAt = 0;
 const OFFSCREEN_RECYCLE_MS = 30 * 60 * 1000;
-
-async function ensureOffscreen() {
-    try {
-        const existing = await chrome.runtime.getContexts({
-            contextTypes: ['OFFSCREEN_DOCUMENT'],
-            documentUrls: [chrome.runtime.getURL(OFFSCREEN_PATH)]
-        });
-        if (existing.length && _offscreenCreatedAt && (Date.now() - _offscreenCreatedAt) > OFFSCREEN_RECYCLE_MS) {
-            try { await chrome.offscreen.closeDocument(); } catch (_) {}
-            _offscreenCreatedAt = 0;
-            existing.length = 0;
-        }
-        if (!existing.length) {
-            await chrome.offscreen.createDocument({
-                url: OFFSCREEN_PATH,
-                reasons: ['DOM_PARSER'],
-                justification: 'Background polling, HTML parsing and keepalive for FunPay automation'
-            });
-            _offscreenCreatedAt = Date.now();
-        }
-    } catch (e) {
-        if (!String(e && e.message || '').includes('Only a single offscreen')) {
-            console.warn('FP Tools engine: ensureOffscreen', e && e.message || e);
-        }
-    }
-}
 
 // One iteration of the active loop.
 async function tick() {

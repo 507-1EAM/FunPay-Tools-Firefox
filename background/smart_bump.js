@@ -12,7 +12,7 @@
 //
 // Result: each category is raised as early as FunPay allows, with no wasted requests and no
 // rate-limit spam - exactly FP Tools's behaviour, adapted to MV3.
-
+import { parseHtmlViaOffscreen } from './offscreen_helper.js';
 export const SMART_BUMP_ALARM = 'fpToolsSmartBump';
 const STATE_KEY = 'fpToolsSmartBumpState'; // { [categoryUrl]: { nextRaiseAt, name } }
 const OFFSCREEN_PATH = 'offscreen/offscreen.html';
@@ -26,17 +26,6 @@ function parseWaitTime(msg) {
     if (/минут|хвилин|minute/i.test(s)) return ((n || 2) - 1) * 60;
     if (/час|годин|hour/i.test(s)) return Math.round(((n || 1) - 0.5) * 3600);
     return 10;
-}
-
-async function parseHtmlViaOffscreen(html, action) {
-    const existing = await chrome.runtime.getContexts({
-        contextTypes: ['OFFSCREEN_DOCUMENT'],
-        documentUrls: [chrome.runtime.getURL(OFFSCREEN_PATH)]
-    });
-    if (!existing.length) {
-        await chrome.offscreen.createDocument({ url: OFFSCREEN_PATH, reasons: ['DOM_PARSER'], justification: 'parse' });
-    }
-    return chrome.runtime.sendMessage({ target: 'offscreen', action, html });
 }
 
 async function getAuth() {

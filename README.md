@@ -1,3 +1,8 @@
+> [!WARNING]
+> ### 🦊 Этот порт на Firefox сделан [D1X3](https://github.com/507-1EAM)
+>
+> ⚠️ **ВНИМАНИЕ!** Данный порт ещё **сырой**. Если что-то не работает — сообщайте в [Issues](https://github.com/507-1EAM/FunPay-Tools-Firefox/issues).
+
 <div align="center">
 
 [![Header](https://capsule-render.vercel.app/api?type=waving&height=200&color=gradient&customColorList=12,20,24&text=FunPay%20Tools&section=header&reversal=false&textBg=false&animation=twinkling&fontColor=c084fc&fontAlign=50&desc=Лучшее%20расширение%20для%20продавцов%20FunPay&descSize=18&fontAlignY=30&descAlignY=52)](https://github.com/XaviersDev/FunPay-Tools)

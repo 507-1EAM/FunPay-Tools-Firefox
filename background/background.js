@@ -924,7 +924,31 @@ async function parseHtmlViaOffscreen(html, action, extra = {}) {
     });
 }
 
+// Firefox: кэш для скрытого iframe, хостящего парсер.
+let _offscreenIframe = null;
+let _offscreenIframeReady = null;
+
 async function ensureOffscreenDocument() {
+    if (typeof chrome.offscreen === 'undefined') {
+        if (_offscreenIframe) return true;
+        if (_offscreenIframeReady) return _offscreenIframeReady;
+
+        _offscreenIframeReady = new Promise((resolve) => {
+            try {
+                const iframe = document.createElement('iframe');
+                iframe.src = chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH);
+                iframe.style.cssText = 'position:fixed;width:0;height:0;border:0;visibility:hidden;';
+                iframe.onload = () => { _offscreenIframe = iframe; resolve(true); };
+                iframe.onerror = () => { resolve(false); };
+                (document.body || document.documentElement).appendChild(iframe);
+            } catch (e) {
+                console.warn('FP Tools: не удалось создать iframe для парсера:', e);
+                resolve(false);
+            }
+        });
+        return _offscreenIframeReady;
+    }
+
     try {
         const existingContexts = await chrome.runtime.getContexts({
             contextTypes: ['OFFSCREEN_DOCUMENT'],

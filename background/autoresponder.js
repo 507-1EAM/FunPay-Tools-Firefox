@@ -2,7 +2,7 @@
 function randomTag() {
     return Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0');
 }
-
+import { parseHtmlViaOffscreen as parseViaOffscreen } from './offscreen_helper.js';
 const BOT_MARKER = '\u2061';
 const OLD_BOT_MARKER = '\u2064';
 function markOutgoing(text) {
@@ -114,18 +114,6 @@ async function getAuth() {
         }
     } catch (e) {}
     return { golden_key, phpsessid };
-}
-
-async function parseViaOffscreen(html, action) {
-    const OFFSCREEN_PATH = 'offscreen/offscreen.html';
-    const existing = await chrome.runtime.getContexts({
-        contextTypes: ['OFFSCREEN_DOCUMENT'],
-        documentUrls: [chrome.runtime.getURL(OFFSCREEN_PATH)]
-    });
-    if (!existing.length) {
-        await chrome.offscreen.createDocument({ url: OFFSCREEN_PATH, reasons: ['DOM_PARSER'], justification: 'parse' });
-    }
-    return chrome.runtime.sendMessage({ target: 'offscreen', action, html });
 }
 
 async function sendChatMessage(chatId, text, auth) {

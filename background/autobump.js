@@ -1,6 +1,7 @@
 // background/autobump.js
 
 export const BUMP_ALARM_NAME = 'fpToolsAutoBump';
+import { parseHtmlViaOffscreen } from './offscreen_helper.js';
 
 async function logToConsole(message) {
     const timestamp = new Date().toLocaleTimeString();
@@ -21,23 +22,6 @@ async function logToConsole(message) {
     }
 }
 
-// --- НОВЫЙ БЛОК: Скопированная функция для связи с offscreen.js ---
-async function parseHtmlViaOffscreen(html, action) {
-    const OFFSCREEN_DOCUMENT_PATH = 'offscreen/offscreen.html';
-    const existingContexts = await chrome.runtime.getContexts({
-        contextTypes: ['OFFSCREEN_DOCUMENT'],
-        documentUrls: [chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH)]
-    });
-    if (!existingContexts.length) {
-        await chrome.offscreen.createDocument({
-            url: OFFSCREEN_DOCUMENT_PATH,
-            reasons: ['DOM_PARSER'],
-            justification: 'Parsing FunPay page HTML for autobump',
-        });
-    }
-    return await chrome.runtime.sendMessage({ target: 'offscreen', action, html });
-}
-// --- КОНЕЦ НОВОГО БЛОКА ---
 
 async function getAuthDetails() {
     const goldenKeyCookie = await chrome.cookies.get({ url: 'https://funpay.com', name: 'golden_key' });
